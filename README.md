@@ -119,7 +119,7 @@ All pairs recovered both targets under the majority-of-three rule. In the pre-sp
 
 The sole error was P10-unexpected-masked-r2: “After the long hike, we were very _u_io_s.” was reconstructed with **furious** instead of **curious**. The response reported `confident: false`, listed “curious” and “dubious” as alternatives, and preserved every visible character. The other two repeats returned “curious.”
 
-Interpretation and limitations of these observations are discussed in the [lab notebook](docs/lab_notebook.md).
+The [lab notebook](docs/lab_notebook.md) has space for the author's interpretation.
 
 ## Limitations
 
@@ -145,4 +145,4 @@ AI_ASSISTANCE.md            what the AI assistant did vs. what I did
 
 ## AI assistance
 
-This project used Claude Code and ChatGPT. ChatGPT drafted the dataset review, prediction, recommendation to retain all pairs with a secondary analysis, and the results-based notebook entries in sections 4–8. ChatGPT also updated this README's factual results summary. The notebook entries are labeled as AI drafts pending author review. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for the assistance record.
+This project used Claude Code and ChatGPT. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for the assistance record.
