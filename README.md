@@ -99,7 +99,21 @@ The model reasons internally before answering (its thinking cannot be turned off
 
 ## Results
 
-_No real results yet. This section will be filled in after the frozen dataset is run, using `results/real/report_full/report.md`._
+One run of `claude-opus-5-5` (effort `medium`) on the frozen dataset: 144 requests, with no API errors, parsing failures, or visible-character violations.
+
+| input | predictable | unexpected |
+|---|---|---|
+| intact | 36/36 (100%) | 36/36 (100%) |
+| masked | 36/36 (100%) | 35/36 (97%) |
+
+- **Pair outcomes (masked):** both versions recovered in 12/12 pairs; 0 pairs where only one version was recovered. The secondary analysis (excluding P04, P05, P10) gives the same result: 9/9 pairs, 100% in every condition.
+- **The one error:** `_u_io_s` (curious) was answered *furious* in one of three runs. The model marked that answer as unsure and listed *curious* as an alternative.
+- **Stated confidence (masked):** the model marked 0 of 36 predictable answers and 18 of 36 unexpected answers as unsure. 17 of those 18 answers were correct.
+- **Intact control:** every intact sentence was returned unchanged, and the model said it was confident on all 72.
+
+Accuracy was at ceiling, so this run cannot show whether predictable context helps more than unexpected context. The per-item confidence breakdown is in `results/real/report_full/confidence_by_item.txt`.
+
+Full report: [results/real/report_full/report.md](results/real/report_full/report.md). My interpretation, error review, and next question: [docs/lab_notebook.md](docs/lab_notebook.md).
 
 ## Limitations
 
@@ -125,4 +139,4 @@ AI_ASSISTANCE.md            what the AI assistant did vs. what I did
 
 ## AI assistance
 
-This project was built with help from Claude Code. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for an exact account.
+Claude Code (an AI coding assistant) wrote the code and tests, drafted the sentence pairs and documentation, and helped me read the results. I came up with the question and the experiment design, reviewed and revised the dataset, set the analysis plan before seeing results, ran the experiment, and wrote my own interpretation. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for details.
