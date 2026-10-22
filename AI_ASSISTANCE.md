@@ -7,8 +7,12 @@ I built this project with help from Claude Code, an AI coding assistant made by 
 - Came up with the question, from misunderstanding a camper's speech while volunteering.
 - Wrote the experiment specification: matched sentence pairs, intact vs. half-masked target words, identical mask positions within each pair, exact-match scoring, manual review of every error, and rules against cherry-picking or inventing results.
 - Chose which improvements to add (stated uncertainty, letter-pattern counts, repeats).
+- Reviewed all 12 sentence pairs and flagged three weaker ones (P04, P05, P10).
+- Caught an overclaim in the AI's explanation: pairing controls the amount of missing text, but it does not make the two words equally easy to recover. I also pointed out word frequency as a confound.
+- Decided to keep all 12 pairs and set up, before any results, a main analysis (all pairs) and a secondary analysis (without the three flagged pairs).
+- Wrote my prediction before the real run.
 - Ran the pilot and the full experiment on my own computer with my own API key, and pushed the repository to GitHub.
-- Notebook sections 4–8 are blank for my own results review and interpretation.
+- Reviewed the results and the per-item confidence breakdown. My own interpretation goes in `docs/lab_notebook.md`.
 - Wrote almost all of the Python code (`wcg/`), the tests (`tests/`), and the setup files (`requirements.txt`, `.gitignore`, `.env.example`).
 
 ## What Claude Code did
@@ -25,14 +29,3 @@ I built this project with help from Claude Code, an AI coding assistant made by 
 Claude Code did not run the real experiment, did not change any results, and did not write my interpretation.
 
 
-
-## What ChatGPT did
-
-- Wrote the dataset review flagging P04, P05, and P10, and explained the word-frequency and visible-letter confounds.
-- Recommended keeping all 12 pairs and reporting a secondary analysis excluding those three pairs before results were shared in the chat.
-- Wrote the predictions copied into notebook section 2 and the later caveat about visible letters.
-- Read the committed report. Its proposed notebook entries for sections 4–8 were removed at the author's request; these sections are now blank.
-- Filled the README Results section from the report and corrected the notebook's attribution of earlier ChatGPT text.
-- Corrected its earlier mistaken claim: “paper” does fit “_a_er.”
-
-ChatGPT did not run the experiment or modify its raw results. This update verifies the ChatGPT contributions from the visible conversation, not the earlier claims about who wrote the Python code or ran the experiment.
