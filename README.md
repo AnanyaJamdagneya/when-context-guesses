@@ -99,27 +99,7 @@ The model reasons internally before answering (its thinking cannot be turned off
 
 ## Results
 
-The committed full run contains 144 requests: 12 pairs × 2 conditions × 2 input types × 3 repeats. See the [full results report](results/real/report_full/report.md).
-
-### Target-word exact-match accuracy
-
-| Input | Predictable | Unexpected |
-|---|---|---|
-| Intact | 36/36 (100%) | 36/36 (100%) |
-| Masked | 36/36 (100%) | 35/36 (97.2%) |
-
-All pairs recovered both targets under the majority-of-three rule. In the pre-specified secondary analysis excluding P04, P05, and P10, all four groups scored 27/27 (100%). There were no recorded failures or visible-character violations.
-
-### Self-reported confidence on masked inputs
-
-| Condition | Right, confident | Right, unsure | Wrong, confident | Wrong, unsure |
-|---|---:|---:|---:|---:|
-| Predictable | 36 | 0 | 0 | 0 |
-| Unexpected | 18 | 17 | 0 | 1 |
-
-The sole error was P10-unexpected-masked-r2: “After the long hike, we were very _u_io_s.” was reconstructed with **furious** instead of **curious**. The response reported `confident: false`, listed “curious” and “dubious” as alternatives, and preserved every visible character. The other two repeats returned “curious.”
-
-The [lab notebook](docs/lab_notebook.md) has space for the author's interpretation.
+_No real results yet. This section will be filled in after the frozen dataset is run, using `results/real/report_full/report.md`._
 
 ## Limitations
 
@@ -145,4 +125,4 @@ AI_ASSISTANCE.md            what the AI assistant did vs. what I did
 
 ## AI assistance
 
-This project used Claude Code and ChatGPT. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for the assistance record.
+This project was built with help from Claude Code. See [AI_ASSISTANCE.md](AI_ASSISTANCE.md) for an exact account.
