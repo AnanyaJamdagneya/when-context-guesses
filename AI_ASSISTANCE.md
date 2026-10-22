@@ -27,4 +27,5 @@ Add a row whenever either of us changes something meaningful. Be specific; this 
 | 2026-10-22 | me | Shared my essay draft and decided to add uncertainty reporting, letter-pattern counts, and 3 repeats per item | Make the experiment test the question my essay asks ("could a decoder know when not to guess?") and check the visible-letter weakness |
 | 2026-10-22 | Claude Code | Implemented those three changes (prompt v2, `wcg/patterns.py`, repeats, new report tables, tests) | Suggested after reading my draft; I chose which to add |
 | 2026-10-22 | Claude Code | Wrote `docs/claude_prediction.md` at my request | A labeled AI guess, kept separate from my own prediction |
+| 2026-10-22 | me | Wrote my prediction (section 2 of `docs/lab_notebook.md`); Claude Code pasted it in verbatim | Recorded before any real results |
 | | me | | |
