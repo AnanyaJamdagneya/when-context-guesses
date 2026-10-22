@@ -5,10 +5,10 @@ P02,predictable,She drank a glass of water after her run.,water,5,
 P02,unexpected,She drank a glass of gravy after her run.,gravy,5,
 P03,predictable,The baby fell asleep on her mother's chest.,chest,7,
 P03,unexpected,The baby fell asleep on her mother's piano.,piano,7,
-P04,predictable,He paid for the groceries with cash.,cash,6,
-P04,unexpected,He paid for the groceries with corn.,corn,6,
-P05,predictable,The firefighters rushed into the burning building.,building,6,
-P05,unexpected,The firefighters rushed into the burning aquarium.,aquarium,6,
+P04,predictable,He paid for the groceries with cash.,cash,6,flagged in author review (see docs/lab_notebook.md section 1)
+P04,unexpected,He paid for the groceries with corn.,corn,6,flagged in author review (see docs/lab_notebook.md section 1)
+P05,predictable,The firefighters rushed into the burning building.,building,6,flagged in author review (see docs/lab_notebook.md section 1)
+P05,unexpected,The firefighters rushed into the burning aquarium.,aquarium,6,flagged in author review (see docs/lab_notebook.md section 1)
 P06,predictable,Remember to water the plants while I'm away.,plants,4,
 P06,unexpected,Remember to water the camels while I'm away.,camels,4,
 P07,predictable,The students raised their hands to answer the question.,hands,4,
@@ -17,8 +17,8 @@ P08,predictable,"It was raining, so she opened her umbrella.",umbrella,7,
 P08,unexpected,"It was raining, so she opened her suitcase.",suitcase,7,
 P09,predictable,The chef chopped the onions with a sharp knife.,knife,8,
 P09,unexpected,The chef chopped the onions with a sharp sword.,sword,8,
-P10,predictable,"After the long hike, we were very thirsty.",thirsty,7,
-P10,unexpected,"After the long hike, we were very curious.",curious,7,
+P10,predictable,"After the long hike, we were very thirsty.",thirsty,7,flagged in author review (see docs/lab_notebook.md section 1)
+P10,unexpected,"After the long hike, we were very curious.",curious,7,flagged in author review (see docs/lab_notebook.md section 1)
 P11,predictable,The dentist asked me to open my mouth wide.,mouth,7,
 P11,unexpected,The dentist asked me to open my purse wide.,purse,7,
 P12,predictable,The bird built a nest in the old tree.,tree,8,

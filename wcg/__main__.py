@@ -14,12 +14,14 @@ def show_dataset() -> None:
     sentences = load_dataset(config.DATASET_PATH)
     words = english_words(config.WORDLIST_SIZE)
     print(f"Dataset OK: {len(sentences)} sentences. Masked inputs with seed {config.SEED}.")
-    print("'fits' = how many common English words match the visible letters, ignoring context.\n")
+    print("'fits' = how many common English words match the visible letters, ignoring context.")
+    print("'frequency' = how common the word is in general (Zipf scale: ~3 uncommon, ~5 very common).\n")
     for item in build_items(sentences, config.SEED):
         if item.input_type == "masked":
             info = pattern_info(mask_word(item.target_word.lower(), item.mask_positions), item.target_word, words)
             print(f"{item.pair_id} {item.condition:<12} {item.model_input:<58} "
-                  f"target: {item.target_word:<9} fits: {info['candidate_count']}")
+                  f"target: {item.target_word:<9} fits: {info['candidate_count']:<3} "
+                  f"frequency: {info['target_zipf_frequency']:.1f}")
 
 
 def main(argv: list[str] | None = None) -> None:

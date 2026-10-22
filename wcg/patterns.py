@@ -24,11 +24,19 @@ def matching_words(pattern: str, words: tuple[str, ...]) -> list[str]:
     return [w for w in words if regex.match(w)]
 
 
+def word_frequency(word: str) -> float:
+    """Zipf frequency: about 3 = rare-ish, 5 = very common. Measures familiarity, not fit in context."""
+    from wordfreq import zipf_frequency
+
+    return zipf_frequency(word, "en")
+
+
 def pattern_info(pattern: str, target_word: str, words: tuple[str, ...]) -> dict:
     candidates = matching_words(pattern, words)
     target = target_word.lower()
     return {
         "pattern": pattern,
+        "target_zipf_frequency": word_frequency(target),
         "candidate_count": len(candidates),
         "target_frequency_rank": candidates.index(target) + 1 if target in candidates else None,
         "most_frequent_candidates": candidates[:3],

@@ -178,6 +178,7 @@ def pattern_table(items: list[Item], stability: dict[str, dict]) -> list[dict]:
             {
                 "item": item.base_id.removesuffix("-masked"),
                 "target_word": item.target_word,
+                "word_frequency_zipf": info["target_zipf_frequency"],
                 "pattern": info["pattern"],
                 "words_that_fit": info["candidate_count"],
                 "target_frequency_rank": info["target_frequency_rank"] or "not in list",
@@ -348,10 +349,11 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         "",
         _md_table(uncertainty, list(uncertainty[0].keys())),
         "",
-        "## How much do the visible letters alone narrow the answer?",
+        "## Word familiarity and letter patterns",
         "",
         f"Number of words among the {config.WORDLIST_SIZE:,} most common English words (wordfreq list) that fit each "
         "blank pattern, ignoring the sentence. Rank 1 means the target is the most common word that fits. "
+        "`word_frequency_zipf` is how common the target word is in general (about 3 = uncommon, 5 = very common). "
         "The list includes some names and abbreviations, so counts are approximate.",
         "",
         _md_table(patterns, list(patterns[0].keys())),

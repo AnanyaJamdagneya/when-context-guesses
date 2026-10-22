@@ -28,4 +28,6 @@ Add a row whenever either of us changes something meaningful. Be specific; this 
 | 2026-10-22 | Claude Code | Implemented those three changes (prompt v2, `wcg/patterns.py`, repeats, new report tables, tests) | Suggested after reading my draft; I chose which to add |
 | 2026-10-22 | Claude Code | Wrote `docs/claude_prediction.md` at my request | A labeled AI guess, kept separate from my own prediction |
 | 2026-10-22 | me | Wrote my prediction (section 2 of `docs/lab_notebook.md`); Claude Code pasted it in verbatim | Recorded before any real results |
+| 2026-10-22 | me | Reviewed all 12 pairs, flagged P04, P05, P10; corrected Claude's overclaim that pairing isolates unexpectedness; pointed out word frequency as a confound; updated my prediction | My review, pasted verbatim into the lab notebook |
+| 2026-10-22 | Claude Code | Added my corrected wording and the frequency confound to the README; added a word-frequency column to the report | Following my review |
 | | me | | |

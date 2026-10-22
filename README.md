@@ -18,6 +18,7 @@ While volunteering at a camp, I misunderstood a camper whose speech was affected
 | unexpected | I brushed my **horse** before going to bed. |
 
 - Target words in a pair have the same length, so identical letter positions can be hidden.
+- Pairing keeps the surrounding sentence and target length constant, helping us compare reconstruction of expected and unexpected words. However, the words may still differ in familiarity and how easily their visible letters identify them.
 - "Predictable" and "unexpected" are **my own subjective labels**, not measured probabilities.
 - The dataset is frozen (`data/dataset_freeze.json` records its SHA-256 hash) before any real run, and real runs refuse to start if the file has changed. Any later change must be logged with a reason.
 
@@ -44,6 +45,7 @@ Each request is separate, with no conversation history. The model never sees the
 - *Pair outcomes*: for each pair, whether **both**, **neither**, **predictable only**, or **unexpected only** was recovered.
 - *Stated uncertainty*: for masked inputs, a breakdown of right/wrong × confident/unsure, and how often a wrong answer still listed the true word as an alternative. This is the model's own statement, not a measured probability.
 - *Letter-pattern difficulty*: for each masked word, how many of the 50,000 most common English words (from the `wordfreq` frequency list) fit the visible letters, ignoring the sentence. This shows how much the letters alone narrow the answer, separately from context.
+- *Word familiarity*: each target word's general frequency (Zipf scale from `wordfreq`). In 10 of 12 pairs the predictable word is also the more common word, so familiarity and predictability are tangled together in this dataset.
 - *Sign test*: an exact two-sided test on the pairs where only one version was recovered. It was chosen before running. With 12 pairs it has very little statistical power, so it is descriptive only.
 - *Manual review*: every error is listed in `error_table.csv` with an empty column where I record whether the error looks like a substitution of a more conventional word. Errors are **not** automatically labeled as "predictability bias".
 
@@ -101,6 +103,8 @@ _No real results yet. This section will be filled in after the frozen dataset is
 - **Small and subjective.** 12 pairs written and labeled by one person. The "predictable" and "unexpected" labels were not measured.
 - **One model, one run, one prompt.** Outputs are not deterministic. A different model, prompt, or day could give different answers.
 - **The visible letters differ between pairs.** The hidden positions match, but the letters left showing are different (`te_t_` vs `ho_s_`). Some patterns allow only one common word (`u__r__la`) while others allow dozens (`_a_er`), so differences in accuracy may come from letter patterns rather than predictability. The pattern-difficulty table measures this but cannot remove it.
+- **Predictable words are usually also more common words.** Any accuracy gap could reflect general word frequency rather than fit with the sentence. This dataset cannot separate the two.
+- **Some contrasts are weaker than others.** In review, P04 (cash/corn), P05 (building/aquarium), and P10 (thirsty/curious) were flagged as strained or weak contrasts. See `docs/lab_notebook.md`.
 - **Self-reported confidence is not calibration.** A model saying "not confident" is different from the probability scores a real decoder produces.
 - **Exact match is strict.** It cannot tell a reasonable alternative from an unreasonable one; that is what the manual review column is for.
 - **Text is not speech.** Written blanks with known length and known positions are very different from noisy audio or neural signals. These results cannot be transferred directly to speech decoding or to people with dysarthria.
