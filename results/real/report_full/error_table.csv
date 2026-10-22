@@ -1,0 +1,2 @@
+item_id,base_id,repeat,pair_id,condition,input_type,original,model_input,target_word,reconstruction,recovered_word,target_correct,confident,other_possible_words,target_in_other_words,visible_char_violation,violation_detail,failure,failure_detail,reviewer_more_conventional_substitution,reviewer_notes
+P10-unexpected-masked-r2,P10-unexpected-masked,2,P10,unexpected,masked,"After the long hike, we were very curious.","After the long hike, we were very _u_io_s.",curious,"After the long hike, we were very furious.",furious,False,False,"curious, dubious",True,False,,,,,

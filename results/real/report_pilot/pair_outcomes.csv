@@ -1,0 +1,7 @@
+input_type,pair_id,predictable_target,predictable_answers,predictable_correct,unexpected_target,unexpected_answers,unexpected_correct,outcome
+intact,P01,teeth,"teeth, teeth, teeth",3/3,horse,"horse, horse, horse",3/3,both
+intact,P02,water,"water, water, water",3/3,gravy,"gravy, gravy, gravy",3/3,both
+intact,P03,chest,"chest, chest, chest",3/3,piano,"piano, piano, piano",3/3,both
+masked,P01,teeth,"teeth, teeth, teeth",3/3,horse,"horse, horse, horse",3/3,both
+masked,P02,water,"water, water, water",3/3,gravy,"gravy, gravy, gravy",3/3,both
+masked,P03,chest,"chest, chest, chest",3/3,piano,"piano, piano, piano",3/3,both

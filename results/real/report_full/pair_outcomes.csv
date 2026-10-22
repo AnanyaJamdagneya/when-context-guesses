@@ -1,0 +1,25 @@
+input_type,pair_id,predictable_target,predictable_answers,predictable_correct,unexpected_target,unexpected_answers,unexpected_correct,outcome
+intact,P01,teeth,"teeth, teeth, teeth",3/3,horse,"horse, horse, horse",3/3,both
+intact,P02,water,"water, water, water",3/3,gravy,"gravy, gravy, gravy",3/3,both
+intact,P03,chest,"chest, chest, chest",3/3,piano,"piano, piano, piano",3/3,both
+intact,P04,cash,"cash, cash, cash",3/3,corn,"corn, corn, corn",3/3,both
+intact,P05,building,"building, building, building",3/3,aquarium,"aquarium, aquarium, aquarium",3/3,both
+intact,P06,plants,"plants, plants, plants",3/3,camels,"camels, camels, camels",3/3,both
+intact,P07,hands,"hands, hands, hands",3/3,forks,"forks, forks, forks",3/3,both
+intact,P08,umbrella,"umbrella, umbrella, umbrella",3/3,suitcase,"suitcase, suitcase, suitcase",3/3,both
+intact,P09,knife,"knife, knife, knife",3/3,sword,"sword, sword, sword",3/3,both
+intact,P10,thirsty,"thirsty, thirsty, thirsty",3/3,curious,"curious, curious, curious",3/3,both
+intact,P11,mouth,"mouth, mouth, mouth",3/3,purse,"purse, purse, purse",3/3,both
+intact,P12,tree,"tree, tree, tree",3/3,shoe,"shoe, shoe, shoe",3/3,both
+masked,P01,teeth,"teeth, teeth, teeth",3/3,horse,"horse, horse, horse",3/3,both
+masked,P02,water,"water, water, water",3/3,gravy,"gravy, gravy, gravy",3/3,both
+masked,P03,chest,"chest, chest, chest",3/3,piano,"piano, piano, piano",3/3,both
+masked,P04,cash,"cash, cash, cash",3/3,corn,"corn, corn, corn",3/3,both
+masked,P05,building,"building, building, building",3/3,aquarium,"aquarium, aquarium, aquarium",3/3,both
+masked,P06,plants,"plants, plants, plants",3/3,camels,"camels, camels, camels",3/3,both
+masked,P07,hands,"hands, hands, hands",3/3,forks,"forks, forks, forks",3/3,both
+masked,P08,umbrella,"umbrella, umbrella, umbrella",3/3,suitcase,"suitcase, suitcase, suitcase",3/3,both
+masked,P09,knife,"knife, knife, knife",3/3,sword,"sword, sword, sword",3/3,both
+masked,P10,thirsty,"thirsty, thirsty, thirsty",3/3,curious,"curious, furious, curious",2/3,both
+masked,P11,mouth,"mouth, mouth, mouth",3/3,purse,"purse, purse, purse",3/3,both
+masked,P12,tree,"tree, tree, tree",3/3,shoe,"shoe, shoe, shoe",3/3,both

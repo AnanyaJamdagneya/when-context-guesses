@@ -1,0 +1,7 @@
+item,target_word,word_frequency_zipf,pattern,words_that_fit,target_frequency_rank,most_frequent_fits,model_correct
+P01-predictable,teeth,4.58,te_t_,5,2,"tests, teeth, texts",3/3
+P01-unexpected,horse,4.76,ho_s_,4,2,"house, horse, hoist",3/3
+P02-predictable,water,5.52,_a_er,53,1,"water, later, paper",3/3
+P02-unexpected,gravy,3.48,_r_vy,2,1,"gravy, privy",3/3
+P03-predictable,chest,4.52,__est,6,2,"guest, chest, quest",3/3
+P03-unexpected,piano,4.31,__ano,3,1,"piano, plano, guano",3/3

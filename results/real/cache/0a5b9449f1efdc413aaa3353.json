@@ -1,0 +1,87 @@
+{
+  "request": {
+    "model": "claude-opus-5-5",
+    "max_tokens": 16000,
+    "output_config": {
+      "effort": "medium",
+      "format": {
+        "type": "json_schema",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "reconstruction": {
+              "type": "string"
+            },
+            "confident": {
+              "type": "boolean"
+            },
+            "other_possible_words": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "reconstruction",
+            "confident",
+            "other_possible_words"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "You will see one English sentence. Some letters may have been replaced with underscores (_). Each underscore stands for exactly one missing letter.\n\nReconstruct the complete sentence.\n- Copy every visible character exactly as shown, including capitalization, spaces, and punctuation.\n- Replace each underscore with exactly one letter.\n- If the sentence contains no underscores, return it exactly as shown.\n\nAlso report:\n- \"confident\": true if you are confident your reconstruction matches the original sentence, otherwise false.\n- \"other_possible_words\": any other words that could have been the original where letters are missing. Use an empty list if there are none.\n\n<sentence>The dentist asked me to open my purse wide.</sentence>"
+      }
+    ]
+  },
+  "requested_at": "2026-10-22T21:50:37+00:00",
+  "status": "ok",
+  "received_at": "2026-10-22T21:50:39+00:00",
+  "response_id": "msg_011CgJ1p3hhBo6xkydqwjFuq",
+  "response_model": "claude-opus-5-5",
+  "stop_reason": "end_turn",
+  "stop_details": null,
+  "usage": {
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 504,
+    "output_tokens": 82,
+    "output_tokens_details": {
+      "thinking_tokens": 39
+    },
+    "server_tool_use": null,
+    "service_tier": "standard",
+    "speed": "standard"
+  },
+  "raw_text": "{\"reconstruction\":\"The dentist asked me to open my purse wide.\",\"confident\":true,\"other_possible_words\":[]}",
+  "item": {
+    "item_id": "P11-unexpected-intact-r1",
+    "pair_id": "P11",
+    "condition": "unexpected",
+    "input_type": "intact",
+    "original": "The dentist asked me to open my purse wide.",
+    "model_input": "The dentist asked me to open my purse wide.",
+    "target_word": "purse",
+    "target_position": 7,
+    "mask_positions": [],
+    "repeat": 1
+  },
+  "cache_key": "0a5b9449f1efdc413aaa3353",
+  "settings": {
+    "model": "claude-opus-5-5",
+    "effort": "medium",
+    "max_tokens": 16000
+  },
+  "prompt_version": "v2",
+  "dataset_sha256": "3a584d44c3f30d2d7a10df7108ee08b1335daf1ad7d0ced7a6e22bb2aaf5458a",
+  "seed": 20261022
+}

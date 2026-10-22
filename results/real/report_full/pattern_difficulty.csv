@@ -1,0 +1,25 @@
+item,target_word,word_frequency_zipf,pattern,words_that_fit,target_frequency_rank,most_frequent_fits,model_correct
+P01-predictable,teeth,4.58,te_t_,5,2,"tests, teeth, texts",3/3
+P01-unexpected,horse,4.76,ho_s_,4,2,"house, horse, hoist",3/3
+P02-predictable,water,5.52,_a_er,53,1,"water, later, paper",3/3
+P02-unexpected,gravy,3.48,_r_vy,2,1,"gravy, privy",3/3
+P03-predictable,chest,4.52,__est,6,2,"guest, chest, quest",3/3
+P03-unexpected,piano,4.31,__ano,3,1,"piano, plano, guano",3/3
+P04-predictable,cash,4.92,__sh,31,2,"wish, cash, fish",3/3
+P04-unexpected,corn,4.19,__rn,23,7,"turn, born, burn",3/3
+P05-predictable,building,5.29,__ildi__,2,1,"building, childish",3/3
+P05-unexpected,aquarium,3.56,__uari__,3,1,"aquarium, aquarius, squaring",3/3
+P06-predictable,plants,4.71,p__nt_,9,3,"points, plenty, plants",3/3
+P06-unexpected,camels,3.3,c__el_,3,1,"camels, cowell, canelo",3/3
+P07-predictable,hands,5.16,han__,8,1,"hands, handy, hangs",3/3
+P07-unexpected,forks,3.45,for__,15,8,"force, forms, forth",3/3
+P08-predictable,umbrella,3.89,u__r__la,1,1,umbrella,3/3
+P08-unexpected,suitcase,3.55,s__t__se,2,1,"suitcase, synthase",3/3
+P09-predictable,knife,4.41,_nif_,3,1,"knife, sniff, unify",3/3
+P09-unexpected,sword,4.37,_wor_,3,1,"sword, sworn, swore",3/3
+P10-predictable,thirsty,3.74,_h_rs_y,1,1,thirsty,3/3
+P10-unexpected,curious,4.45,_u_io_s,4,1,"curious, furious, dubious",2/3
+P11-predictable,mouth,4.83,mo_t_,6,2,"month, mouth, motto",3/3
+P11-unexpected,purse,3.95,pu_s_,3,3,"pussy, pulse, purse",3/3
+P12-predictable,tree,4.85,__ee,12,2,"free, tree, knee",3/3
+P12-unexpected,shoe,4.24,__oe,3,1,"shoe, aloe, oboe",3/3
