@@ -1,0 +1,10 @@
+{
+  "versions": [
+    {
+      "version": 1,
+      "sha256": "3a584d44c3f30d2d7a10df7108ee08b1335daf1ad7d0ced7a6e22bb2aaf5458a",
+      "frozen_at": "2026-10-22T21:31:05+00:00",
+      "note": "Author review complete: keep all 12 pairs; weaknesses in P04, P05, P10 documented; main analysis = all 12 pairs, secondary = excluding P04, P05, P10, both reported regardless."
+    }
+  ]
+}

@@ -47,6 +47,9 @@ Each request is separate, with no conversation history. The model never sees the
 - *Letter-pattern difficulty*: for each masked word, how many of the 50,000 most common English words (from the `wordfreq` frequency list) fit the visible letters, ignoring the sentence. This shows how much the letters alone narrow the answer, separately from context.
 - *Word familiarity*: each target word's general frequency (Zipf scale from `wordfreq`). In 10 of 12 pairs the predictable word is also the more common word, so familiarity and predictability are tangled together in this dataset.
 - *Sign test*: an exact two-sided test on the pairs where only one version was recovered. It was chosen before running. With 12 pairs it has very little statistical power, so it is descriptive only.
+- *Pre-specified analyses* (decided before any real results; both are reported even if they disagree):
+  - **Main:** all 12 pairs.
+  - **Secondary:** excluding P04, P05, and P10, which I flagged in review as strained or weak contrasts. This checks whether the overall pattern depends on those three pairs. The visible-letter ambiguity remains a limitation in both.
 - *Manual review*: every error is listed in `error_table.csv` with an empty column where I record whether the error looks like a substitution of a more conventional word. Errors are **not** automatically labeled as "predictability bias".
 
 ## Setup

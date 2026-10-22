@@ -30,4 +30,6 @@ Add a row whenever either of us changes something meaningful. Be specific; this 
 | 2026-10-22 | me | Wrote my prediction (section 2 of `docs/lab_notebook.md`); Claude Code pasted it in verbatim | Recorded before any real results |
 | 2026-10-22 | me | Reviewed all 12 pairs, flagged P04, P05, P10; corrected Claude's overclaim that pairing isolates unexpectedness; pointed out word frequency as a confound; updated my prediction | My review, pasted verbatim into the lab notebook |
 | 2026-10-22 | Claude Code | Added my corrected wording and the frequency confound to the README; added a word-frequency column to the report | Following my review |
+| 2026-10-22 | me | Decided to keep all 12 pairs and pre-specified a main analysis (all pairs) and a secondary analysis (excluding P04, P05, P10), both reported regardless | Check whether the result depends on the weaker pairs without dropping data |
+| 2026-10-22 | Claude Code | Implemented the secondary analysis in the report; froze dataset version 1 with my decision as the note | Following my decision |
 | | me | | |

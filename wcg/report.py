@@ -189,6 +189,30 @@ def pattern_table(items: list[Item], stability: dict[str, dict]) -> list[dict]:
     return table
 
 
+def secondary_analysis(rows: list[dict], outcomes: list[dict]) -> str:
+    """The same accuracy and pair-outcome summary, without the pairs flagged in review."""
+    excluded = set(config.SECONDARY_EXCLUDED_PAIRS)
+    kept_rows = [r for r in rows if r["pair_id"] not in excluded]
+    kept_outcomes = [o for o in outcomes if o["pair_id"] not in excluded]
+    table = accuracy_table(kept_rows)
+    b = sum(o["outcome"] == "predictable only" for o in kept_outcomes)
+    c = sum(o["outcome"] == "unexpected only" for o in kept_outcomes)
+    counts = {k: sum(o["outcome"] == k for o in kept_outcomes)
+              for k in ("both", "neither", "predictable only", "unexpected only", "incomplete (failure)")}
+    return "\n".join([
+        f"Excludes {', '.join(sorted(excluded))} ({len(kept_outcomes)} pairs remain). "
+        "This was specified before any real results and is reported regardless of whether it agrees with the main analysis.",
+        "",
+        _md_table(
+            [{**r, "accuracy": f"{r['correct']}/{r['scored']} ({_pct(r)})"} for r in table],
+            ["input_type", "condition", "accuracy", "failures"],
+        ),
+        "",
+        "Masked pair outcomes: " + ", ".join(f"{k}: {v}" for k, v in counts.items()) + ". "
+        f"Exact two-sided sign test on discordant pairs ({b} vs {c}): p = {exact_sign_test(b, c):.3f}.",
+    ])
+
+
 def needs_review(row: dict) -> bool:
     return bool(row["failure"]) or row["target_correct"] is False or row["visible_char_violation"] is True
 
@@ -310,7 +334,7 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         "",
         "Timestamps, raw responses, and errors are in `cache/`, `attempts.jsonl`, and `runs/` in this mode's folder.",
         "",
-        "## Target-word exact-match accuracy",
+        "## Main analysis: target-word exact-match accuracy (all pairs)",
         "",
         "Capitalization and surrounding punctuation are ignored; synonyms and misspellings count as wrong. "
         "Counts are over individual requests (each repeat counts once). "
@@ -335,6 +359,12 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         f"Only the unexpected version: **{c}**. "
         f"Exact two-sided sign test on these discordant pairs: p = {exact_sign_test(b, c):.3f}. "
         "With so few pairs this test can miss real differences, so a large p-value does not show the conditions are equal.",
+        "",
+        "## Secondary analysis: excluding pairs flagged in review",
+        "",
+        secondary_analysis(rows, masked),
+        "",
+        "The visible-letter and word-frequency differences described below remain limitations in both analyses.",
         "",
         "## Pair outcomes (intact control)",
         "",

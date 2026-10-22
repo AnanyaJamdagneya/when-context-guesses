@@ -17,6 +17,15 @@ These are a reasonable starting dataset, but the explanation overstates how fair
 
 You cannot say an error is caused only by unexpectedness. Word frequency and how strongly the remaining letters identify the answer could also explain it.
 
+**Decision (2026-10-22, before any real results; typed by me in chat and pasted verbatim):**
+
+I recommend keeping all 12 and documenting those weaknesses. Before seeing results, specify that you’ll report:
+
+* The main comparison using all 12 pairs.
+* A secondary comparison excluding P04, P05, and P10.
+
+Report both even if they disagree. This preserves the original dataset while checking whether the overall pattern depends on those three pairs. The visible-letter ambiguity remains a limitation in both analyses.
+
 ## 2. Predictions (written before seeing real results)
 
 What do I expect to happen, and why? What result would surprise me?

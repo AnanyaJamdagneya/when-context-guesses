@@ -24,6 +24,11 @@ REPEATS = 3
 # Size of the English word-frequency list used to count which words fit a blank pattern.
 WORDLIST_SIZE = 50000
 
+# Pre-specified before any real results: the main analysis uses all 12 pairs, and a
+# secondary analysis excludes these pairs, which the author flagged as weaker contrasts.
+# Both are reported, even if they disagree.
+SECONDARY_EXCLUDED_PAIRS = ("P04", "P05", "P10")
+
 DEFAULT_MODEL = "claude-opus-5-5"
 DEFAULT_EFFORT = "medium"
 MAX_TOKENS = 16000
