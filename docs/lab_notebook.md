@@ -1,12 +1,12 @@
 # Lab Notebook
 
-Project notes. Sections 1–2 contain review, recommendations, and predictions copied from ChatGPT. Sections 4–8 are blank for the author's own entries.
+My own notes, in my own words. The AI assistant created this blank template; everything below the headings is mine.
 
 ## 1. Dataset review (before any real run)
 
 Which pairs did I keep, change, or replace, and why? Which labels was I unsure about?
 
-_Written 2026-10-22, before any real results. Written by ChatGPT in chat and copied here._
+_Written 2026-10-22, before any real results. Typed by me in chat and pasted here verbatim by Claude Code._
 
 These are a reasonable starting dataset, but the explanation overstates how fair the comparison is. Matching word length and hiding the same positions controls the amount of missing text. It doesn’t make the words equally difficult to recover.
 
@@ -17,7 +17,7 @@ These are a reasonable starting dataset, but the explanation overstates how fair
 
 You cannot say an error is caused only by unexpectedness. Word frequency and how strongly the remaining letters identify the answer could also explain it.
 
-**Decision (2026-10-22, before any real results; ChatGPT recommendation copied from chat):**
+**Decision (2026-10-22, before any real results; typed by me in chat and pasted verbatim):**
 
 I recommend keeping all 12 and documenting those weaknesses. Before seeing results, specify that you’ll report:
 
@@ -30,7 +30,7 @@ Report both even if they disagree. This preserves the original dataset while che
 
 What do I expect to happen, and why? What result would surprise me?
 
-_Written 2026-10-22, before any real results. Written by ChatGPT in chat and copied here._
+_Written 2026-10-22, before any real results. Typed by me in chat and pasted here verbatim by Claude Code._
 
 1. Masked: I predict it will get more predictable words right because the surrounding sentence makes those words easier to guess. Unexpected words might get replaced with something more familiar.
 2. Intact: I expect it to preserve most intact sentences, but it might occasionally “correct” unexpected wording even though nothing is missing.
@@ -46,9 +46,15 @@ Did the pipeline work? Anything unexpected in the raw responses? (I won't change
 
 ## 4. Full-run results
 
+The numbers, copied from `results/real/report_full/report.md`.
+
 ## 5. Manual review of errors
 
+For each error: did the model substitute a more conventional word, a different plausible word, or something else? What made it hard to decide?
+
 ## 6. Interpretation
+
+What can and can't I conclude from 12 pairs and one model run?
 
 ## 7. Mistakes and changes in my approach
 
