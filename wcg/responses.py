@@ -10,10 +10,15 @@ from .masking import MASK_CHAR
 class ParsedResponse:
     reconstruction: str | None
     error: str | None
+    confident: bool | None = None
+    other_possible_words: tuple[str, ...] = ()
 
 
 def parse_response_text(text: str | None) -> ParsedResponse:
-    """Expect a JSON object like {"reconstruction": "..."}; anything else is a parsing failure."""
+    """Expect {"reconstruction": str, "confident": bool, "other_possible_words": [str]}.
+
+    Anything else is a parsing failure; we never try to guess what a malformed answer meant.
+    """
     if not text or not text.strip():
         return ParsedResponse(None, "empty response")
     cleaned = text.strip()
@@ -25,7 +30,12 @@ def parse_response_text(text: str | None) -> ParsedResponse:
         return ParsedResponse(None, f"invalid JSON: {e.msg}")
     if not isinstance(data, dict) or not isinstance(data.get("reconstruction"), str):
         return ParsedResponse(None, "JSON is missing a string 'reconstruction' field")
-    return ParsedResponse(data["reconstruction"].strip(), None)
+    if not isinstance(data.get("confident"), bool):
+        return ParsedResponse(None, "JSON is missing a true/false 'confident' field")
+    others = data.get("other_possible_words")
+    if not isinstance(others, list) or not all(isinstance(w, str) for w in others):
+        return ParsedResponse(None, "JSON is missing a list of strings in 'other_possible_words'")
+    return ParsedResponse(data["reconstruction"].strip(), None, data["confident"], tuple(w.strip() for w in others))
 
 
 def visible_character_violations(model_input: str, reconstruction: str) -> list[str]:

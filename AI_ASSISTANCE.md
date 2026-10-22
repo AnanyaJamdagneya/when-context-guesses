@@ -24,4 +24,6 @@ Add a row whenever either of us changes something meaningful. Be specific; this 
 | date | who | what changed | why |
 |---|---|---|---|
 | 2026-10-22 | Claude Code | Generated code, tests, docs, and draft dataset | Initial build from my specification |
+| 2026-10-22 | me | Shared my essay draft and decided to add uncertainty reporting, letter-pattern counts, and 3 repeats per item | Make the experiment test the question my essay asks ("could a decoder know when not to guess?") and check the visible-letter weakness |
+| 2026-10-22 | Claude Code | Implemented those three changes (prompt v2, `wcg/patterns.py`, repeats, new report tables, tests) | Suggested after reading my draft; I chose which to add |
 | | me | | |

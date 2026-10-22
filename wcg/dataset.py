@@ -39,6 +39,12 @@ class Item:
     target_word: str
     target_position: int
     mask_positions: tuple[int, ...]
+    repeat: int  # 1..REPEATS; each repeat is an independent request with the same prompt
+
+    @property
+    def base_id(self) -> str:
+        """The item without its repeat number, e.g. 'P01-unexpected-masked'."""
+        return f"{self.pair_id}-{self.condition}-{self.input_type}"
 
 
 def dataset_sha256(path: Path) -> str:
@@ -122,7 +128,9 @@ def _frame(s: Sentence) -> list[str]:
     return tokens
 
 
-def build_items(sentences: list[Sentence], seed: int, pair_ids: tuple[str, ...] | None = None) -> list[Item]:
+def build_items(
+    sentences: list[Sentence], seed: int, pair_ids: tuple[str, ...] | None = None, repeats: int = 1
+) -> list[Item]:
     items = []
     for s in sentences:
         if pair_ids is not None and s.pair_id not in pair_ids:
@@ -134,17 +142,19 @@ def build_items(sentences: list[Sentence], seed: int, pair_ids: tuple[str, ...] 
                 if input_type == "intact"
                 else mask_sentence(s.sentence, s.target_position, s.target_word, positions)
             )
-            items.append(
-                Item(
-                    item_id=f"{s.pair_id}-{s.condition}-{input_type}",
-                    pair_id=s.pair_id,
-                    condition=s.condition,
-                    input_type=input_type,
-                    original=s.sentence,
-                    model_input=model_input,
-                    target_word=s.target_word,
-                    target_position=s.target_position,
-                    mask_positions=positions if input_type == "masked" else (),
+            for repeat in range(1, repeats + 1):
+                items.append(
+                    Item(
+                        item_id=f"{s.pair_id}-{s.condition}-{input_type}-r{repeat}",
+                        pair_id=s.pair_id,
+                        condition=s.condition,
+                        input_type=input_type,
+                        original=s.sentence,
+                        model_input=model_input,
+                        target_word=s.target_word,
+                        target_position=s.target_position,
+                        mask_positions=positions if input_type == "masked" else (),
+                        repeat=repeat,
+                    )
                 )
-            )
     return items

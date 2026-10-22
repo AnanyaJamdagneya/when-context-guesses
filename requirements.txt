@@ -1,3 +1,4 @@
 anthropic>=2.0,<3
 matplotlib>=3.8
+wordfreq==3.1.1
 pytest>=8.0

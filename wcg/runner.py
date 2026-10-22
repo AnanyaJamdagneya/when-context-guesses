@@ -19,12 +19,17 @@ def scope_pairs(scope: str) -> tuple[str, ...] | None:
 
 def load_scope_items(scope: str) -> list[Item]:
     sentences = load_dataset(config.DATASET_PATH)
-    return build_items(sentences, config.SEED, scope_pairs(scope))
+    return build_items(sentences, config.SEED, scope_pairs(scope), config.REPEATS)
 
 
 def cache_key(item: Item, settings: config.ModelSettings) -> str:
     """Identical prompt + identical settings = identical key, so a paid request is never repeated."""
-    payload = {"settings": settings.as_dict(), "prompt_version": PROMPT_VERSION, "prompt": build_prompt(item.model_input)}
+    payload = {
+        "settings": settings.as_dict(),
+        "prompt_version": PROMPT_VERSION,
+        "prompt": build_prompt(item.model_input),
+        "repeat": item.repeat,  # repeats share a prompt but are separate requests
+    }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:24]
 
 
@@ -64,7 +69,8 @@ def run(scope: str, mock: bool, settings: config.ModelSettings, assume_yes: bool
 
     label = "MOCK (no API calls, results are meaningless)" if mock else "REAL API"
     print(f"Mode:      {label}")
-    print(f"Scope:     {scope} ({len({i.pair_id for i in items})} pairs, {len(items)} items)")
+    print(f"Scope:     {scope} ({len({i.pair_id for i in items})} pairs x 2 conditions x 2 input types "
+          f"x {config.REPEATS} repeats = {len(items)} requests)")
     print(f"Model:     {settings.model}   effort: {settings.effort}   max_tokens: {settings.max_tokens}")
     print(f"Dataset:   sha256 {dataset_hash[:16]}...   seed: {config.SEED}   prompt: {PROMPT_VERSION}")
     print(f"Cached:    {len(items) - len(to_send)}")
@@ -109,6 +115,7 @@ def run(scope: str, mock: bool, settings: config.ModelSettings, assume_yes: bool
         "finished_at": utc_now(),
         "settings": settings.as_dict(),
         "seed": config.SEED,
+        "repeats": config.REPEATS,
         "dataset_sha256": dataset_hash,
         "prompt_version": PROMPT_VERSION,
         "prompt_template": PROMPT_TEMPLATE,

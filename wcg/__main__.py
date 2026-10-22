@@ -8,11 +8,18 @@ from .dataset import DatasetError, build_items, load_dataset
 
 
 def show_dataset() -> None:
+    from .masking import mask_word
+    from .patterns import english_words, pattern_info
+
     sentences = load_dataset(config.DATASET_PATH)
-    print(f"Dataset OK: {len(sentences)} sentences. Masked inputs with seed {config.SEED}:\n")
+    words = english_words(config.WORDLIST_SIZE)
+    print(f"Dataset OK: {len(sentences)} sentences. Masked inputs with seed {config.SEED}.")
+    print("'fits' = how many common English words match the visible letters, ignoring context.\n")
     for item in build_items(sentences, config.SEED):
         if item.input_type == "masked":
-            print(f"{item.pair_id} {item.condition:<12} {item.model_input:<60} target: {item.target_word}")
+            info = pattern_info(mask_word(item.target_word.lower(), item.mask_positions), item.target_word, words)
+            print(f"{item.pair_id} {item.condition:<12} {item.model_input:<58} "
+                  f"target: {item.target_word:<9} fits: {info['candidate_count']}")
 
 
 def main(argv: list[str] | None = None) -> None:

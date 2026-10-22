@@ -37,3 +37,23 @@ def test_both_versions_of_every_pair_share_mask_positions():
 def test_intact_items_are_unchanged():
     items = build_items(load_dataset(config.DATASET_PATH), config.SEED)
     assert all(i.model_input == i.original for i in items if i.input_type == "intact")
+
+
+def test_repeats_share_input_but_get_separate_cache_keys():
+    from wcg.runner import cache_key
+
+    items = build_items(load_dataset(config.DATASET_PATH), config.SEED, ("P01",), repeats=3)
+    masked = [i for i in items if i.base_id == "P01-predictable-masked"]
+    assert len(masked) == 3
+    assert len({i.model_input for i in masked}) == 1
+    settings = config.load_settings(mock=True)
+    assert len({cache_key(i, settings) for i in masked}) == 3
+
+
+def test_pattern_matching_counts_words_that_fit():
+    from wcg.patterns import matching_words, pattern_info
+
+    words = ("house", "horse", "hoist", "mouse", "horses")
+    assert matching_words("ho_s_", words) == ["house", "horse", "hoist"]
+    info = pattern_info("ho_s_", "horse", words)
+    assert info["candidate_count"] == 3 and info["target_frequency_rank"] == 2

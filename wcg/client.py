@@ -72,7 +72,8 @@ class AnthropicClient:
 class MockClient:
     """A stand-in for pipeline testing. It is NOT a language model and its output means nothing.
 
-    It returns intact sentences unchanged and fills every blank with the letter 'e'.
+    It returns intact sentences unchanged, fills every blank with the letter 'e', and always
+    reports itself as not confident with no alternatives.
     """
 
     def __init__(self, settings: ModelSettings):
@@ -90,7 +91,9 @@ class MockClient:
             "stop_reason": "end_turn",
             "stop_details": None,
             "usage": None,
-            "raw_text": json.dumps({"reconstruction": sentence.replace(MASK_CHAR, "e")}),
+            "raw_text": json.dumps(
+                {"reconstruction": sentence.replace(MASK_CHAR, "e"), "confident": False, "other_possible_words": []}
+            ),
         }
 
 

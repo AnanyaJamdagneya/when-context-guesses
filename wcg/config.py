@@ -17,6 +17,13 @@ SEED = 20261022
 # results existed, so the pilot pairs are not hand-picked.
 PILOT_PAIRS = ("P01", "P02", "P03")
 
+# Each item is sent this many times as separate requests. Current Claude models do not
+# accept a temperature setting, so repeats show how stable an answer is.
+REPEATS = 3
+
+# Size of the English word-frequency list used to count which words fit a blank pattern.
+WORDLIST_SIZE = 50000
+
 DEFAULT_MODEL = "claude-opus-5-5"
 DEFAULT_EFFORT = "medium"
 MAX_TOKENS = 16000

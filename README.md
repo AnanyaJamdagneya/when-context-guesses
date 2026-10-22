@@ -1,6 +1,6 @@
 # When Context Guesses
 
-A small, exploratory experiment: **when the same amount of a word is missing, does a language model reconstruct predictable sentences more accurately than grammatical but unexpected ones?**
+A small, exploratory experiment: **when the same amount of a word is missing, does a language model reconstruct predictable sentences more accurately than grammatical but unexpected ones?** And a follow-up: **when it guesses wrong, does it know it might be wrong?**
 
 ## Why
 
@@ -28,13 +28,22 @@ While volunteering at a camp, I misunderstood a camper whose speech was affected
 
 Example (P01): `I brushed my te_t_ before going to bed.` vs `I brushed my ho_s_ before going to bed.`
 
-**Model requests.** One prompt template is used for every item (see `wcg/prompts.py`). The model is asked to reconstruct the sentence, keep every visible character, and return JSON `{"reconstruction": "..."}` (enforced with the API's structured-output setting). Each item is a separate request with no conversation history. The model never sees the original sentence, the condition label, or the paired sentence. 12 pairs × 2 conditions × 2 input types = **48 requests**.
+**Model requests.** One prompt template is used for every item (see `wcg/prompts.py`). The model is asked to reconstruct the sentence and keep every visible character. It returns JSON, enforced with the API's structured-output setting:
+
+```json
+{"reconstruction": "...", "confident": true, "other_possible_words": ["..."]}
+```
+
+Each request is separate, with no conversation history. The model never sees the original sentence, the condition label, or the paired sentence. Every item is sent **3 times** as independent requests, because current Claude models don't accept a temperature setting and answers can vary. 12 pairs × 2 conditions × 2 input types × 3 repeats = **144 requests**.
 
 **Scoring** (`wcg/scoring.py`, `wcg/responses.py`).
 - *Exact match*: the word at the target position, ignoring capitalization and surrounding punctuation, must be spelled exactly like the target. Synonyms count as wrong.
 - *Visible-character violation*: the reconstruction changed a visible character, changed the length, or filled a blank with a non-letter. This is recorded separately from correctness.
 - *Failures* (API error, refusal, truncation, unparseable output) are counted separately and left out of accuracy denominators.
+- *Repeats*: accuracy tables count every request. For pair outcomes, an item counts as "recovered" when the target was exact in more than half of its scored repeats (2 or 3 of 3). This rule was fixed before any real run.
 - *Pair outcomes*: for each pair, whether **both**, **neither**, **predictable only**, or **unexpected only** was recovered.
+- *Stated uncertainty*: for masked inputs, a breakdown of right/wrong × confident/unsure, and how often a wrong answer still listed the true word as an alternative. This is the model's own statement, not a measured probability.
+- *Letter-pattern difficulty*: for each masked word, how many of the 50,000 most common English words (from the `wordfreq` frequency list) fit the visible letters, ignoring the sentence. This shows how much the letters alone narrow the answer, separately from context.
 - *Sign test*: an exact two-sided test on the pairs where only one version was recovered. It was chosen before running. With 12 pairs it has very little statistical power, so it is descriptive only.
 - *Manual review*: every error is listed in `error_table.csv` with an empty column where I record whether the error looks like a substitution of a more conventional word. Errors are **not** automatically labeled as "predictability bias".
 
@@ -60,7 +69,7 @@ python -m wcg pilot --mock              # test the whole pipeline with no API ca
 python -m wcg report --mock --scope pilot
 
 python -m wcg freeze --note "Reviewed pairs before any real run"   # once, after reviewing the dataset
-python -m wcg pilot                     # 3-pair pilot (12 real requests)
+python -m wcg pilot                     # 3-pair pilot (36 real requests)
 python -m wcg full                      # all 12 pairs (reuses cached pilot responses)
 python -m wcg report                    # tables, plot, and Markdown report
 ```
@@ -77,8 +86,9 @@ Mock results go to `results/mock/` (git-ignored). The mock fills every blank wit
 | model | `claude-opus-5-5` (default; the real run's manifest records the exact model used) |
 | effort | `medium` |
 | max_tokens | 16000 |
-| output format | JSON schema `{"reconstruction": string}` |
-| temperature | not settable on current Claude models, so a rerun may produce different answers. This project analyzes the single cached response for each item. |
+| output format | JSON schema `{"reconstruction": string, "confident": boolean, "other_possible_words": [string]}` |
+| repeats | 3 independent requests per item |
+| temperature | not settable on current Claude models, so answers can vary. The 3 repeats show how much, and all of them are cached and reported. |
 
 The model reasons internally before answering (its thinking cannot be turned off on this model). Refusal fallbacks to other models are deliberately **not** enabled, so every response comes from the configured model.
 
@@ -90,7 +100,8 @@ _No real results yet. This section will be filled in after the frozen dataset is
 
 - **Small and subjective.** 12 pairs written and labeled by one person. The "predictable" and "unexpected" labels were not measured.
 - **One model, one run, one prompt.** Outputs are not deterministic. A different model, prompt, or day could give different answers.
-- **The visible letters differ between pairs.** The hidden positions match, but the letters left showing are different (`te_t_` vs `ho_s_`). Some patterns allow only one word while others allow many, so differences in accuracy may come from letter patterns rather than predictability.
+- **The visible letters differ between pairs.** The hidden positions match, but the letters left showing are different (`te_t_` vs `ho_s_`). Some patterns allow only one common word (`u__r__la`) while others allow dozens (`_a_er`), so differences in accuracy may come from letter patterns rather than predictability. The pattern-difficulty table measures this but cannot remove it.
+- **Self-reported confidence is not calibration.** A model saying "not confident" is different from the probability scores a real decoder produces.
 - **Exact match is strict.** It cannot tell a reasonable alternative from an unreasonable one; that is what the manual review column is for.
 - **Text is not speech.** Written blanks with known length and known positions are very different from noisy audio or neural signals. These results cannot be transferred directly to speech decoding or to people with dysarthria.
 

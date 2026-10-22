@@ -9,10 +9,12 @@ from pathlib import Path
 
 from . import config
 from .dataset import CONDITIONS, INPUT_TYPES, Item, dataset_sha256
+from .masking import mask_word
+from .patterns import english_words, pattern_info
 from .prompts import PROMPT_TEMPLATE, PROMPT_VERSION
 from .responses import parse_response_text, visible_character_violations
 from .runner import cache_key, load_cached, load_scope_items
-from .scoring import exact_sign_test, extract_target, is_exact_match
+from .scoring import exact_sign_test, extract_target, is_exact_match, normalize_word
 
 REVIEW_COLUMNS = ["reviewer_more_conventional_substitution", "reviewer_notes"]
 
@@ -21,6 +23,8 @@ def evaluate_item(item: Item, record: dict | None) -> dict:
     """Score one item. 'failure' is set when there is no usable reconstruction to score."""
     row = {
         "item_id": item.item_id,
+        "base_id": item.base_id,
+        "repeat": item.repeat,
         "pair_id": item.pair_id,
         "condition": item.condition,
         "input_type": item.input_type,
@@ -30,6 +34,9 @@ def evaluate_item(item: Item, record: dict | None) -> dict:
         "reconstruction": "",
         "recovered_word": "",
         "target_correct": "",
+        "confident": "",
+        "other_possible_words": "",
+        "target_in_other_words": "",
         "visible_char_violation": "",
         "violation_detail": "",
         "failure": "",
@@ -55,10 +62,14 @@ def evaluate_item(item: Item, record: dict | None) -> dict:
 
     recovered = extract_target(parsed.reconstruction, item.target_position)
     violations = visible_character_violations(item.model_input, parsed.reconstruction)
+    others = [normalize_word(w) for w in parsed.other_possible_words]
     row.update(
         reconstruction=parsed.reconstruction,
         recovered_word=recovered or "",
         target_correct=is_exact_match(recovered, item.target_word),
+        confident=parsed.confident,
+        other_possible_words=", ".join(others),
+        target_in_other_words=item.target_word.lower() in others,
         visible_char_violation=bool(violations),
         violation_detail="; ".join(violations[:3]),
     )
@@ -86,35 +97,95 @@ def accuracy_table(rows: list[dict]) -> list[dict]:
     return table
 
 
-def pair_outcomes(rows: list[dict], input_type: str) -> list[dict]:
-    by_pair: dict[str, dict[str, dict]] = {}
+def item_stability(rows: list[dict]) -> dict[str, dict]:
+    """Collapse repeats: how many of an item's scored repeats recovered the target.
+
+    An item counts as "recovered" when the target was exact in more than half of its
+    scored repeats (2 or 3 out of 3). This rule was fixed before any real run.
+    """
+    stability: dict[str, dict] = {}
     for r in rows:
-        if r["input_type"] == input_type:
-            by_pair.setdefault(r["pair_id"], {})[r["condition"]] = r
+        s = stability.setdefault(r["base_id"], {"correct": 0, "scored": 0, "rows": []})
+        s["rows"].append(r)
+        if not r["failure"]:
+            s["scored"] += 1
+            s["correct"] += r["target_correct"] is True
+    for s in stability.values():
+        s["recovered"] = None if s["scored"] == 0 else s["correct"] * 2 > s["scored"]
+        s["recovered_words"] = ", ".join(r["recovered_word"] or "-" for r in s["rows"])
+    return stability
+
+
+def pair_outcomes(stability: dict[str, dict], pair_ids: list[str], input_type: str) -> list[dict]:
     outcomes = []
-    for pair_id in sorted(by_pair):
-        p, u = by_pair[pair_id].get("predictable"), by_pair[pair_id].get("unexpected")
-        if not p or not u or p["failure"] or u["failure"]:
+    for pair_id in pair_ids:
+        p = stability.get(f"{pair_id}-predictable-{input_type}")
+        u = stability.get(f"{pair_id}-unexpected-{input_type}")
+        if not p or not u or p["recovered"] is None or u["recovered"] is None:
             outcome = "incomplete (failure)"
-        elif p["target_correct"] and u["target_correct"]:
+        elif p["recovered"] and u["recovered"]:
             outcome = "both"
-        elif not p["target_correct"] and not u["target_correct"]:
+        elif not p["recovered"] and not u["recovered"]:
             outcome = "neither"
-        elif p["target_correct"]:
+        elif p["recovered"]:
             outcome = "predictable only"
         else:
             outcome = "unexpected only"
         outcomes.append(
             {
                 "pair_id": pair_id,
-                "predictable_target": p["target_word"] if p else "",
-                "predictable_recovered": p["recovered_word"] if p else "",
-                "unexpected_target": u["target_word"] if u else "",
-                "unexpected_recovered": u["recovered_word"] if u else "",
+                "predictable_target": p["rows"][0]["target_word"] if p else "",
+                "predictable_answers": p["recovered_words"] if p else "",
+                "predictable_correct": f"{p['correct']}/{p['scored']}" if p else "",
+                "unexpected_target": u["rows"][0]["target_word"] if u else "",
+                "unexpected_answers": u["recovered_words"] if u else "",
+                "unexpected_correct": f"{u['correct']}/{u['scored']}" if u else "",
                 "outcome": outcome,
             }
         )
     return outcomes
+
+
+def uncertainty_table(rows: list[dict]) -> list[dict]:
+    """For masked inputs: did the model's stated confidence line up with being right?"""
+    table = []
+    for condition in CONDITIONS:
+        usable = [r for r in rows if r["input_type"] == "masked" and r["condition"] == condition and not r["failure"]]
+        wrong = [r for r in usable if r["target_correct"] is False]
+        table.append(
+            {
+                "condition": condition,
+                "right_and_confident": sum(r["target_correct"] is True and r["confident"] is True for r in usable),
+                "right_but_unsure": sum(r["target_correct"] is True and r["confident"] is False for r in usable),
+                "wrong_but_confident": sum(r["target_correct"] is False and r["confident"] is True for r in wrong),
+                "wrong_and_unsure": sum(r["target_correct"] is False and r["confident"] is False for r in wrong),
+                "wrong_but_target_listed_as_alternative": f"{sum(r['target_in_other_words'] is True for r in wrong)}/{len(wrong)}",
+            }
+        )
+    return table
+
+
+def pattern_table(items: list[Item], stability: dict[str, dict]) -> list[dict]:
+    words = english_words(config.WORDLIST_SIZE)
+    table, seen = [], set()
+    for item in items:
+        if item.input_type != "masked" or item.base_id in seen:
+            continue
+        seen.add(item.base_id)
+        info = pattern_info(mask_word(item.target_word.lower(), item.mask_positions), item.target_word, words)
+        s = stability.get(item.base_id)
+        table.append(
+            {
+                "item": item.base_id.removesuffix("-masked"),
+                "target_word": item.target_word,
+                "pattern": info["pattern"],
+                "words_that_fit": info["candidate_count"],
+                "target_frequency_rank": info["target_frequency_rank"] or "not in list",
+                "most_frequent_fits": ", ".join(info["most_frequent_candidates"]),
+                "model_correct": f"{s['correct']}/{s['scored']}" if s else "",
+            }
+        )
+    return table
 
 
 def needs_review(row: dict) -> bool:
@@ -194,8 +265,14 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
     out_dir.mkdir(parents=True, exist_ok=True)
 
     table = accuracy_table(rows)
-    outcomes = {t: pair_outcomes(rows, t) for t in INPUT_TYPES}
+    stability = item_stability(rows)
+    pair_ids = sorted({i.pair_id for i in items})
+    outcomes = {t: pair_outcomes(stability, pair_ids, t) for t in INPUT_TYPES}
     masked = outcomes["masked"]
+    uncertainty = uncertainty_table(rows)
+    patterns = pattern_table(items, stability)
+    intact_usable = [r for r in rows if r["input_type"] == "intact" and not r["failure"]]
+    intact_unsure = sum(r["confident"] is False for r in intact_usable)
     b = sum(o["outcome"] == "predictable only" for o in masked)
     c = sum(o["outcome"] == "unexpected only" for o in masked)
 
@@ -207,6 +284,7 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
     write_csv(review_path, errors, columns + REVIEW_COLUMNS)
     write_csv(out_dir / "pair_outcomes.csv", [{"input_type": t, **o} for t in INPUT_TYPES for o in outcomes[t]],
               ["input_type"] + list(masked[0].keys()))
+    write_csv(out_dir / "pattern_difficulty.csv", patterns, list(patterns[0].keys()))
 
     label = "MOCK RESULTS (pipeline test only; not a language model)" if mock else "Real model results"
     plot_accuracy(table, out_dir / "accuracy.png", f"{label}\n{scope} run, model: {settings.model}")
@@ -223,7 +301,7 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         f"- Model: `{settings.model}` (effort `{settings.effort}`, max_tokens {settings.max_tokens})",
         f"- Dataset sha256: `{dataset_sha256(config.DATASET_PATH)}`",
         f"- Seed: {config.SEED}; prompt version: {PROMPT_VERSION}",
-        f"- Items in scope: {len(items)} ({len({i.pair_id for i in items})} pairs x 2 conditions x 2 input types)",
+        f"- Requests in scope: {len(items)} ({len(pair_ids)} pairs x 2 conditions x 2 input types x {config.REPEATS} repeats)",
     ]
     if not_run:
         lines += [f"- **{not_run} item(s) have no response yet.** Run the experiment before interpreting."]
@@ -234,7 +312,8 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         "## Target-word exact-match accuracy",
         "",
         "Capitalization and surrounding punctuation are ignored; synonyms and misspellings count as wrong. "
-        "Items with an API, refusal, truncation, or parsing failure are excluded from the denominator and counted separately.",
+        "Counts are over individual requests (each repeat counts once). "
+        "Requests with an API, refusal, truncation, or parsing failure are excluded from the denominator and counted separately.",
         "",
         _md_table(
             [{**r, "accuracy": f"{r['correct']}/{r['scored']} ({_pct(r)})"} for r in table],
@@ -245,17 +324,37 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         "",
         "## Pair outcomes (masked input)",
         "",
-        _md_table(masked, ["pair_id", "predictable_target", "predictable_recovered", "unexpected_target",
-                           "unexpected_recovered", "outcome"]),
+        f"An item counts as recovered when the target was exact in more than half of its {config.REPEATS} repeats. "
+        "The answers column lists the word given in each repeat.",
         "",
-        f"Pairs where only the predictable version was recovered: **{b}**. "
+        _md_table(masked, ["pair_id", "predictable_target", "predictable_answers", "predictable_correct",
+                           "unexpected_target", "unexpected_answers", "unexpected_correct", "outcome"]),
+        "",
+        f"Pairs where only the predictable version was recovered: **{b}**. "  # majority across repeats
         f"Only the unexpected version: **{c}**. "
         f"Exact two-sided sign test on these discordant pairs: p = {exact_sign_test(b, c):.3f}. "
         "With so few pairs this test can miss real differences, so a large p-value does not show the conditions are equal.",
         "",
         "## Pair outcomes (intact control)",
         "",
-        _md_table(outcomes["intact"], ["pair_id", "predictable_recovered", "unexpected_recovered", "outcome"]),
+        _md_table(outcomes["intact"], ["pair_id", "predictable_answers", "unexpected_answers", "outcome"]),
+        "",
+        f"Intact requests where the model said it was not confident: {intact_unsure}/{len(intact_usable)}.",
+        "",
+        "## Did the model know when it might be wrong? (masked input)",
+        "",
+        "The model reported `confident` (true/false) and `other_possible_words` with every answer. "
+        "This is the model's own statement, not a measured probability.",
+        "",
+        _md_table(uncertainty, list(uncertainty[0].keys())),
+        "",
+        "## How much do the visible letters alone narrow the answer?",
+        "",
+        f"Number of words among the {config.WORDLIST_SIZE:,} most common English words (wordfreq list) that fit each "
+        "blank pattern, ignoring the sentence. Rank 1 means the target is the most common word that fits. "
+        "The list includes some names and abbreviations, so counts are approximate.",
+        "",
+        _md_table(patterns, list(patterns[0].keys())),
         "",
         "## Items for manual review",
         "",
@@ -264,7 +363,8 @@ def build_report(scope: str, mock: bool, settings: config.ModelSettings) -> Path
         "`reviewer_more_conventional_substitution` column of `error_table.csv` (kept when the report is regenerated).",
         "",
         _md_table(errors, ["item_id", "model_input", "reconstruction", "target_word", "recovered_word",
-                           "target_correct", "visible_char_violation", "failure", "reviewer_more_conventional_substitution"])
+                           "target_correct", "confident", "other_possible_words", "visible_char_violation", "failure",
+                           "reviewer_more_conventional_substitution"])
         if errors else "_No items need review._",
         "",
         "## Failures and violations",
